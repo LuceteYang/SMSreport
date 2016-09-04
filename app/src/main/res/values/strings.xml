@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">SMSreport</string>
+    <string name="main_title">SMSreport</string>
+    <string name="group_title">그룹선택</string>
+</resources>
