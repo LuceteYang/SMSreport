@@ -18,7 +18,25 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
+        android:text="@string/situation_choice"
         android:id="@+id/getbackdata" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Date"
+        android:id="@+id/tv_date"
+        android:layout_below="@+id/getbackdata"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="18dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Time"
+        android:id="@+id/tv_time"
+        android:layout_below="@+id/tv_date"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="22dp" />
 
 </RelativeLayout>
