@@ -31,7 +31,7 @@ public class PropertyManager {
     }
 
     public static final String SITUATION = "0";
-    public static final String[] SITUATIONMSG = new String[] {"내용 입력","내용 입력","내용 입력","내용 입력"};
+    public static final String REPORTER = "보고자";
 
     public String getSituation() {
         return mPrefs.getString(SITUATION,"0");
@@ -42,16 +42,15 @@ public class PropertyManager {
         mEditor.commit();
     }
 
-    public String getSituationmsg(int index){
-        Log.i("getSituationmsg########",String.valueOf(index));
-        return mPrefs.getString(SITUATIONMSG[index],"내용 입력");
+    public String getReporter() {
+        return mPrefs.getString(REPORTER,"보고자");
     }
 
-    public void setSituationmsg(int index, String text) {
-        Log.i("msgSituationmsg########",String.valueOf(index)+text);
-        mEditor.putString(SITUATIONMSG[index], text);
+    public void setReporter(String name) {
+        mEditor.putString(REPORTER, name);
         mEditor.commit();
     }
+
 
 
 }

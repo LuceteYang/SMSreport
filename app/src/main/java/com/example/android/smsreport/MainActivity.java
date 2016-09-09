@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -30,29 +31,59 @@ public class MainActivity extends AppCompatActivity implements  OnDateSetListene
     TextView content_tv;
     EditText content_et;
     Button save_btn;
+    TextView reporter_tv;
+    EditText reporter_et;
+    Button save_reporter_btn;
+
+
     long tenYears = 10L * 365 * 1000 * 60 * 60 * 24L;
+    boolean nowedit=false;
     final String[] situations = new String[] {"장애발생보고","중간보고","장애복구","훈련상황"};
     Calendar ca = Calendar.getInstance();
     SimpleDateFormat df = new SimpleDateFormat("yyyy년 MM월 dd일 HH시 mm분 ss초");
     String abc= df.format(ca.getTime());
+    private  Realm realm;
     int index =Integer.parseInt(PropertyManager.getInstance().getSituation());
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        realm = Realm.getDefaultInstance();
+/*        realm.beginTransaction();
+        Situation sit = realm.createObject(Situation.class);
+        sit.setCode(0);
+        sit.setSituation("장애발생보고");
+        sit.setSituationmgs("내용을 입력해주세요.");
+        Situation sit1 = realm.createObject(Situation.class);
+        sit1.setCode(1);
+        sit1.setSituation("중간보고");
+        sit1.setSituationmgs("내용을 입력해주세요.");
+        Situation sit2 = realm.createObject(Situation.class);
+        sit2.setCode(2);
+        sit2.setSituation("장애복구");
+        sit2.setSituationmgs("내용을 입력해주세요.");
+        Situation sit3 = realm.createObject(Situation.class);
+        sit3.setCode(3);
+        sit3.setSituation("훈련상황");
+        sit3.setSituationmgs("내용을 입력해주세요.");
+        realm.commitTransaction();*/
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         getSupportActionBar().setCustomView(R.layout.main_bar);
         situattion_tv = (TextView)findViewById(R.id.getbackdata);
         all_tv = (TextView)findViewById(R.id.tv_all);
         content_tv = (TextView)findViewById(R.id.tv_content);
         save_btn = (Button)findViewById(R.id.btn_save);
-        situattion_tv.setText(situations[index]);
-        all_tv.setText(abc);
         content_et = (EditText)findViewById(R.id.et_content);
-        content_tv.setText(PropertyManager.getInstance().getSituationmsg(index));
-        Realm realm = Realm.getDefaultInstance();
-        Situation sit = realm.createObject(Situation.class);
-        sit.setSituation("");
+        reporter_tv = (TextView)findViewById(R.id.tv_reporter);
+        reporter_et = (EditText)findViewById(R.id.et_reporter);
+        save_reporter_btn = (Button)findViewById(R.id.btn_save_repoter);
+        all_tv.setText(abc);
+        final Situation result = realm.where(Situation.class).equalTo("code", index).findFirst();
+        situattion_tv.setText(result.getSituation());
+        content_tv.setText(result.getSituationmgs());
+        reporter_tv.setText(PropertyManager.getInstance().getReporter());
+
+
 
         mDialogAll = new TimePickerDialog.Builder()
                 .setCallBack(this)
@@ -80,6 +111,7 @@ public class MainActivity extends AppCompatActivity implements  OnDateSetListene
         situattion_tv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if(!nowedit){
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                 builder.setTitle("상황 선택");
                 builder.setSingleChoiceItems(situations,index,new DialogInterface.OnClickListener(){
@@ -87,12 +119,16 @@ public class MainActivity extends AppCompatActivity implements  OnDateSetListene
                     public void onClick(DialogInterface dialogInterface, int i) {
                         PropertyManager.getInstance().setSituation(String.valueOf(i));
                         index = i;
-                        situattion_tv.setText(situations[i]);
-                        content_tv.setText(PropertyManager.getInstance().getSituationmsg(i));
+                        Situation result1 = realm.where(Situation.class)
+                                .equalTo("code", i)
+                                .findFirst();
+                        situattion_tv.setText(result1.getSituation());
+                        content_tv.setText(result1.getSituationmgs());
                         dialogInterface.dismiss();
                     }
                 });
                 builder.create().show();
+                }
             }
         });
 
@@ -107,8 +143,9 @@ public class MainActivity extends AppCompatActivity implements  OnDateSetListene
         content_tv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                content_tv.setVisibility(View.INVISIBLE);
-                content_et.setText(PropertyManager.getInstance().getSituationmsg(index));
+                nowedit=true;
+                content_tv.setVisibility(View.GONE);
+                content_et.setText(content_tv.getText());
                 content_et.setVisibility(View.VISIBLE);
                 save_btn.setVisibility(View.VISIBLE);
             }
@@ -117,20 +154,42 @@ public class MainActivity extends AppCompatActivity implements  OnDateSetListene
         save_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                nowedit=false;
                 String content = content_et.getText().toString();
                 content_tv.setText(content);
-                PropertyManager.getInstance().setSituationmsg(index,content);
-                content_et.setVisibility(View.INVISIBLE);
-                save_btn.setVisibility(View.INVISIBLE);
+                Situation result1 = realm.where(Situation.class)
+                        .equalTo("code", index)
+                        .findFirst();
+                realm.beginTransaction();
+                result1.setSituationmgs(content);
+                realm.commitTransaction();
+                content_et.setVisibility(View.GONE);
+                save_btn.setVisibility(View.GONE);
                 content_tv.setVisibility(View.VISIBLE);
             }
         });
 
+        reporter_tv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                reporter_tv.setVisibility(View.GONE);
+                reporter_et.setText(reporter_tv.getText());
+                reporter_et.setVisibility(View.VISIBLE);
+                save_reporter_btn.setVisibility(View.VISIBLE);
+            }
+        });
 
-       /* PropertyManager.getInstance().getEmail();
-        PropertyManager.getInstance().getPassword();
-        PropertyManager.getInstance().setEmail(email);
-        PropertyManager.getInstance().setPassword(password);*/
+        save_reporter_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String content = reporter_et.getText().toString();
+                reporter_tv.setText(content);
+                PropertyManager.getInstance().setReporter(content);
+                reporter_et.setVisibility(View.GONE);
+                save_reporter_btn.setVisibility(View.GONE);
+                reporter_tv.setVisibility(View.VISIBLE);
+            }
+        });
     }
 
     @Override
@@ -166,5 +225,11 @@ public class MainActivity extends AppCompatActivity implements  OnDateSetListene
     public String getDateToString(long time) {
         Date d = new Date(time);
         return df.format(d);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        realm.close();
     }
 }
