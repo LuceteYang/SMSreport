@@ -14,6 +14,20 @@
         android:layout_height="wrap_content"
         android:text="New Button"
         android:id="@+id/groupbtn"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true" />
+
+    <ListView
+        android:layout_width="wrap_content"
+        android:layout_height="500px"
+        android:id="@+id/grouplist"
+        android:choiceMode="multipleChoice"
         android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+    <ListView
+        android:layout_width="wrap_content"
+        android:layout_height="500px"
+        android:id="@+id/contactlist"
+        android:layout_below="@+id/grouplist"
         android:layout_alignParentStart="true" />
 </RelativeLayout>

@@ -31,7 +31,7 @@ public class PropertyManager {
     }
 
     public static final String SITUATION = "0";
-    public static final String REPORTER = "보고자";
+    public static final String REPORTER = "";
 
     public String getSituation() {
         return mPrefs.getString(SITUATION,"0");

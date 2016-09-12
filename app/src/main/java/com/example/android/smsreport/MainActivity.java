@@ -24,6 +24,8 @@ import java.util.Date;
 
 import io.realm.Realm;
 
+
+
 public class MainActivity extends AppCompatActivity implements  OnDateSetListener {
     TimePickerDialog mDialogAll;
     TextView situattion_tv;
@@ -49,24 +51,26 @@ public class MainActivity extends AppCompatActivity implements  OnDateSetListene
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         realm = Realm.getDefaultInstance();
-/*        realm.beginTransaction();
-        Situation sit = realm.createObject(Situation.class);
-        sit.setCode(0);
-        sit.setSituation("장애발생보고");
-        sit.setSituationmgs("내용을 입력해주세요.");
-        Situation sit1 = realm.createObject(Situation.class);
-        sit1.setCode(1);
-        sit1.setSituation("중간보고");
-        sit1.setSituationmgs("내용을 입력해주세요.");
-        Situation sit2 = realm.createObject(Situation.class);
-        sit2.setCode(2);
-        sit2.setSituation("장애복구");
-        sit2.setSituationmgs("내용을 입력해주세요.");
-        Situation sit3 = realm.createObject(Situation.class);
-        sit3.setCode(3);
-        sit3.setSituation("훈련상황");
-        sit3.setSituationmgs("내용을 입력해주세요.");
-        realm.commitTransaction();*/
+        if(realm.where(Situation.class).equalTo("code", 0).findFirst()==null){
+            realm.beginTransaction();
+            Situation sit = realm.createObject(Situation.class);
+            sit.setCode(0);
+            sit.setSituation("장애발생보고");
+            sit.setSituationmgs("내용을 입력해주세요.");
+            Situation sit1 = realm.createObject(Situation.class);
+            sit1.setCode(1);
+            sit1.setSituation("중간보고");
+            sit1.setSituationmgs("내용을 입력해주세요.");
+            Situation sit2 = realm.createObject(Situation.class);
+            sit2.setCode(2);
+            sit2.setSituation("장애복구");
+            sit2.setSituationmgs("내용을 입력해주세요.");
+            Situation sit3 = realm.createObject(Situation.class);
+            sit3.setCode(3);
+            sit3.setSituation("훈련상황");
+            sit3.setSituationmgs("내용을 입력해주세요.");
+            realm.commitTransaction();
+        }
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         getSupportActionBar().setCustomView(R.layout.main_bar);
         situattion_tv = (TextView)findViewById(R.id.getbackdata);
