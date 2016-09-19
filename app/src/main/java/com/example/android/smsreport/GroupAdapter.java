@@ -1,13 +1,9 @@
 package com.example.android.smsreport;
 
-import android.graphics.Color;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.security.acl.Group;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by User on 2016-09-09.

@@ -87,9 +87,15 @@ public class GroupActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 GroupInfo groupinfo = (GroupInfo) adapterView.getItemAtPosition(i);
-                groupinfo.setChecked(!groupinfo.isChecked());
+                boolean groupChecked = groupinfo.isChecked();
+                groupinfo.setChecked(!groupChecked);
                 GroupView gv = (GroupView)view;
                 gv.setChecked();
+                if(groupChecked){
+                    contactAdapter.removelist(groupinfo.showMember());
+                }else{
+                    contactAdapter.addlist(groupinfo.showMember());
+                }
             }
         });
     }
@@ -159,9 +165,7 @@ public class GroupActivity extends AppCompatActivity {
 //                Log.i(String.valueOf(Config.checkArray(results,c.getString(IDX_ID))),c.getString(IDX_TITLE));
                 mAdapter.add(g);
                 if(checkarray){
-                    for(int i=0;i<g.getCount()-1;i++){
-                        contactAdapter.add((ContactData)g.showMember().get(i));
-                    }
+                    contactAdapter.addlist(g.showMember());
                 }
             }
         }
@@ -177,9 +181,7 @@ public class GroupActivity extends AppCompatActivity {
         List<ContactData> list = new ArrayList<ContactData>(contactmap.values());
         g.setMembers(list);
         if(checkarray){
-            for(int i=0;i<list.size();i++){
-                contactAdapter.add(list.get(i));
-            }
+            contactAdapter.addlist(list);
         }
         mAdapter.add(g);
     }
@@ -197,8 +199,7 @@ public class GroupActivity extends AppCompatActivity {
         String[] selectionArgs = null;
 
         if (groupID != null && !"".equals(groupID)) {
-            selection = ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID
-                    + " = ?";
+            selection = ContactsContract.CommonDataKinds.GroupMembership.GROUP_ROW_ID + " = ?";
             selectionArgs = new String[]{groupID};
         }
 
