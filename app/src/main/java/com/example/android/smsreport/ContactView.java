@@ -11,6 +11,7 @@ import android.widget.TextView;
 public class ContactView extends LinearLayout {
     TextView ContactName;
     TextView ContactNumber;
+    TextView ContactGroup;
     public ContactView(Context context) {
         super(context);
         init();
@@ -25,10 +26,12 @@ public class ContactView extends LinearLayout {
         inflate(getContext(), R.layout.layout_contact, this);
         this.ContactName = (TextView)findViewById(R.id.tv_contact_name);
         this.ContactNumber = (TextView)findViewById(R.id.tv_contact_number);
+        this.ContactGroup = (TextView)findViewById(R.id.tv_group_name);
     }
 
     public void setContactInfo(ContactData contactData) {
             this.ContactName.setText(contactData.getName());
             this.ContactNumber.setText(contactData.getPhonenum());
+            this.ContactGroup.setText(contactData.getGroupname());
     }
 }

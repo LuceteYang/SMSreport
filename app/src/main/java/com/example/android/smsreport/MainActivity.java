@@ -216,7 +216,7 @@ public class MainActivity extends AppCompatActivity implements  OnDateSetListene
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1 && resultCode == RESULT_OK && data != null) {
             String stredittext=data.getStringExtra("edittextvalue");
-            situattion_tv.setText(stredittext);
+//            situattion_tv.setText(stredittext);
         }
     }
 
