@@ -1,6 +1,7 @@
 package com.example.android.smsreport;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.util.AttributeSet;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -12,6 +13,8 @@ public class ContactView extends LinearLayout {
     TextView ContactName;
     TextView ContactNumber;
     TextView ContactGroup;
+    boolean isChecked = false;
+
     public ContactView(Context context) {
         super(context);
         init();
@@ -30,8 +33,21 @@ public class ContactView extends LinearLayout {
     }
 
     public void setContactInfo(ContactData contactData) {
-            this.ContactName.setText(contactData.getName());
-            this.ContactNumber.setText(contactData.getPhonenum());
-            this.ContactGroup.setText(contactData.getGroupname());
+        isChecked = contactData.isChecked();
+        this.ContactName.setText(contactData.getName());
+        this.ContactNumber.setText(contactData.getPhonenum());
+        this.ContactGroup.setText(contactData.getGroupname());
+        if (isChecked) {
+            ContactName.setBackgroundColor(0xFF00FF00);
+        }
+    }
+
+    public void setChecked() {
+        isChecked = !isChecked;
+        if (isChecked) {
+            ContactName.setBackgroundColor(0xFF00FF00);
+        } else {
+            ContactName.setBackgroundColor(Color.WHITE);
+        }
     }
 }

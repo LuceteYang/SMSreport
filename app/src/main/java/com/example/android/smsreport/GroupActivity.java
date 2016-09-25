@@ -49,7 +49,7 @@ public class GroupActivity extends AppCompatActivity {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ArrayList<String> result;
+                ArrayList<ChoiceGroupid> result;
                 result = mAdapter.returnChoiceGroup();
 /*                Log.i("EEEEEEEEEE",String.valueOf(result.size()));
                 for(int i=0;i<result.size();i++){
@@ -62,7 +62,8 @@ public class GroupActivity extends AppCompatActivity {
                 for(int i=0;i<result.size();i++){
                     realm.beginTransaction();
                     ChoiceGroupid gid = realm.createObject(ChoiceGroupid.class);
-                    gid.setCode(result.get(i));
+                    gid.setCode(result.get(i).getCode());
+                    gid.setGroupname(result.get(i).getGroupname());
                     realm.commitTransaction();
                 }
                 Intent intent = new Intent();
@@ -155,7 +156,7 @@ public class GroupActivity extends AppCompatActivity {
             int users = c.getInt(c.getColumnIndex(ContactsContract.Groups.SUMMARY_WITH_PHONES));
             if(users>0){
                 GroupInfo g = new GroupInfo();
-                boolean checkarray = Config.checkArray(results,c.getString(IDX_ID));
+                boolean checkarray = Config.checkGroupArray(results,c.getString(IDX_ID));
                 g.setId(c.getString(IDX_ID));
                 g.setTitle(c.getString(IDX_TITLE));
                 g.setCount(users);
@@ -175,7 +176,7 @@ public class GroupActivity extends AppCompatActivity {
         g.setId("all");
         g.setTitle("미지정");
         g.setCount(0);
-        boolean checkarray=Config.checkArray(results,"all");
+        boolean checkarray=Config.checkGroupArray(results,"all");
         g.setChecked(checkarray);
 //        Log.i(String.valueOf(Config.checkArray(results,"all")),"미지정");
         List<ContactData> list = new ArrayList<ContactData>(contactmap.values());

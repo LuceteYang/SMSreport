@@ -19,6 +19,10 @@ public class ContactAdapter  extends BasicAdapter<ContactData> {
             view = (ContactView) convertView;
         }
         view.setContactInfo(items.get(position));
+//        if(position==0){
+//            view.setChecked();
+//            view.setChecked();
+//        }
         return view;
     }
     public void addlist(List list){

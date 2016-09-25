@@ -8,6 +8,15 @@ public class ContactData {
     String phonenum;
     String name;
     String id;
+    boolean checked;
+
+    public boolean isChecked() {
+        return checked;
+    }
+
+    public void setChecked(boolean checked) {
+        this.checked = checked;
+    }
 
     public String getGroupname() {
         return groupname;

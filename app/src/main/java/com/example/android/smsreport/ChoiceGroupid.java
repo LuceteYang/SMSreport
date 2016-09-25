@@ -7,6 +7,15 @@ import io.realm.RealmObject;
  */
 public class ChoiceGroupid extends RealmObject {
     private String code;
+    private String Groupname;
+
+    public String getGroupname() {
+        return Groupname;
+    }
+
+    public void setGroupname(String groupname) {
+        Groupname = groupname;
+    }
 
     public String getCode() {
         return code;

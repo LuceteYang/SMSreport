@@ -27,12 +27,15 @@ public class GroupAdapter extends BasicAdapter<GroupInfo> {
         return view;
     }
 
-    public ArrayList<String> returnChoiceGroup(){
-        ArrayList<String> mArrayList = new ArrayList();
+    public ArrayList<ChoiceGroupid> returnChoiceGroup(){
+        ArrayList<ChoiceGroupid> mArrayList = new ArrayList();
         for(int i=0;i<items.size();i++){
             if(items.get(i).isChecked()){
+                ChoiceGroupid a = new ChoiceGroupid();
+                a.setCode(items.get(i).getId());
+                a.setGroupname(items.get(i).getTitle());
 //                Log.i(items.get(i).getTitle(),String.valueOf(items.get(i).isChecked()));
-                mArrayList.add(items.get(i).getId());
+                mArrayList.add(a);
             }
         }
         return mArrayList;
