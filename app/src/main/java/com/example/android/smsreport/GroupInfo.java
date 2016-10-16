@@ -11,7 +11,6 @@ import io.realm.RealmObject;
 public class GroupInfo {
     String id;
     String title;
-    boolean checked;
     int count;
     List<ContactData> members = new ArrayList<ContactData>();
 
@@ -39,13 +38,6 @@ public class GroupInfo {
         return count;
     }
 
-    public boolean isChecked() {
-        return checked;
-    }
-
-    public void setChecked(boolean checked) {
-        this.checked = checked;
-    }
     public void setMembers(List<ContactData> members){
     this.members = members;
     }

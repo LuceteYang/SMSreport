@@ -17,7 +17,6 @@ import android.widget.TextView;
 
 public class GroupView extends LinearLayout {
     TextView GroupName;
-    boolean isChecked = false;
 
     public GroupView(Context context) {
         super(context);
@@ -35,24 +34,12 @@ public class GroupView extends LinearLayout {
     }
 
     public void setGroupInfo(GroupInfo groupinfo) {
-        isChecked = groupinfo.isChecked();
         if (groupinfo.getId().equals("all")) {
             GroupName.setText(groupinfo.getTitle());
         } else {
             GroupName.setText(groupinfo.getTitle() + "(" + groupinfo.getCount() + ")");
         }
-        if (isChecked) {
-            GroupName.setBackgroundColor(0xFF00FF00);
-        }
     }
 
-    public void setChecked() {
-        isChecked = !isChecked;
-        if (isChecked) {
-            GroupName.setBackgroundColor(0xFF00FF00);
-        } else {
-            GroupName.setBackgroundColor(Color.WHITE);
-        }
-    }
 }
 

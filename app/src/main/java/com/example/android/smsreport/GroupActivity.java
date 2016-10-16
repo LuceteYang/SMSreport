@@ -37,6 +37,9 @@ public class GroupActivity extends AppCompatActivity {
     private  Realm realm;
     private final LinkedHashMap<String,ContactData> contactmap = new LinkedHashMap<>();
     RealmResults<ChoiceGroupid> results;
+    List<Boolean> groupChecklist;
+    List<Boolean> checkelist;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,8 +47,10 @@ public class GroupActivity extends AppCompatActivity {
         btn = (Button)findViewById(R.id.groupbtn);
         grouplist = (ListView)findViewById(R.id.grouplist);
         contactlist = (ListView)findViewById(R.id.contactlist);
-        mAdapter = new GroupAdapter();
-        contactAdapter = new ContactAdapter();
+        checkelist = new ArrayList<Boolean>();
+        groupChecklist = new ArrayList<Boolean>();
+        mAdapter = new GroupAdapter(groupChecklist);
+        contactAdapter = new ContactAdapter(checkelist,false);
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -87,16 +92,15 @@ public class GroupActivity extends AppCompatActivity {
         grouplist.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                boolean contactChecked= !groupChecklist.get(i);
+                groupChecklist.set(i,contactChecked);
                 GroupInfo groupinfo = (GroupInfo) adapterView.getItemAtPosition(i);
-                boolean groupChecked = groupinfo.isChecked();
-                groupinfo.setChecked(!groupChecked);
-                GroupView gv = (GroupView)view;
-                gv.setChecked();
-                if(groupChecked){
-                    contactAdapter.removelist(groupinfo.showMember());
-                }else{
+                if(contactChecked){
                     contactAdapter.addlist(groupinfo.showMember());
+                }else{
+                    contactAdapter.removelist(groupinfo.showMember());
                 }
+                mAdapter.notifyDataSetChanged();
             }
         });
     }
@@ -161,7 +165,7 @@ public class GroupActivity extends AppCompatActivity {
                 g.setTitle(c.getString(IDX_TITLE));
                 g.setCount(users);
                 g.setMembers(getContacts(c.getString(IDX_ID),c.getString(IDX_TITLE)));
-                g.setChecked(checkarray);
+                groupChecklist.add(checkarray);
 //                Log.i(c.getString(IDX_ID),c.getString(IDX_TITLE));
 //                Log.i(String.valueOf(Config.checkArray(results,c.getString(IDX_ID))),c.getString(IDX_TITLE));
                 mAdapter.add(g);
@@ -177,7 +181,7 @@ public class GroupActivity extends AppCompatActivity {
         g.setTitle("미지정");
         g.setCount(0);
         boolean checkarray=Config.checkGroupArray(results,"all");
-        g.setChecked(checkarray);
+        groupChecklist.add(checkarray);
 //        Log.i(String.valueOf(Config.checkArray(results,"all")),"미지정");
         List<ContactData> list = new ArrayList<ContactData>(contactmap.values());
         g.setMembers(list);
@@ -229,7 +233,9 @@ public class GroupActivity extends AppCompatActivity {
                         member.setPhonenum(phoneNumber);
                         member.setGroupname(groupName);
                         member.setId(groupcursor.getString(1));
+                        checkelist.add(false);
                         members.add(member);
+
 //                        Log.i(phoneNumber+"  "+String.valueOf(groupcursor.getLong(1)), groupcursor.getString(2));
                         contactmap.remove(groupcursor.getString(1));
                     } while (numberCursor.moveToNext());

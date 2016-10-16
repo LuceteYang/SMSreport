@@ -52,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements  OnDateSetListene
     ContactAdapter contactAdapter;
     RealmResults<ChoiceGroupid> results;
     RealmResults<ChoiceContactid> noSendList;
+    List<Boolean> checkelist;
 
 
     long tenYears = 10L * 365 * 1000 * 60 * 60 * 24L;
@@ -68,6 +69,7 @@ public class MainActivity extends AppCompatActivity implements  OnDateSetListene
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         realm = Realm.getDefaultInstance();
+        checkelist = new ArrayList<Boolean>();
         if (realm.where(Situation.class).equalTo("code", 0).findFirst() == null) {
             realm.beginTransaction();
             Situation sit = realm.createObject(Situation.class);
@@ -108,19 +110,26 @@ public class MainActivity extends AppCompatActivity implements  OnDateSetListene
         situattion_tv.setText(result.getSituation());
         content_tv.setText(result.getSituationmgs());
         reporter_tv.setText(PropertyManager.getInstance().getReporter());
-        contactAdapter = new ContactAdapter();
+        contactAdapter = new ContactAdapter(checkelist,true);
         contact_lv.setAdapter(contactAdapter);
         contact_lv.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
         contact_lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 ContactData contactinfo = (ContactData) adapterView.getItemAtPosition(i);
-                boolean contactChecked = contactinfo.isChecked();
-                contactinfo.setChecked(!contactChecked);
-                ContactView cv = (ContactView)view;
-                cv.setChecked();
-                Toast.makeText(getApplicationContext(),String.valueOf(contactChecked),Toast.LENGTH_SHORT).show();
+                boolean contactChecked= !checkelist.get(i);
+                checkelist.set(i,contactChecked);
+//                boolean contactChecked = contactinfo.isChecked();
+//                contactinfo.setChecked(!contactChecked);
+//                ContactView cv = (ContactView)view;
+//                cv.setChecked(!contactChecked);
+//                Toast.makeText(getApplicationContext(),String.valueOf(contactChecked),Toast.LENGTH_SHORT).show();
                 if(contactChecked){
+                    realm.beginTransaction();
+                    ChoiceContactid cid = realm.createObject(ChoiceContactid.class);
+                    cid.setId(contactinfo.getId());
+                    realm.commitTransaction();
+                }else{
                     final RealmResults<ChoiceContactid> rows = realm.where(ChoiceContactid.class).equalTo("id",contactinfo.getId()).findAll();
                     realm.executeTransaction(new Realm.Transaction() {
                         @Override
@@ -129,12 +138,8 @@ public class MainActivity extends AppCompatActivity implements  OnDateSetListene
                             rows.deleteAllFromRealm();
                         }
                     });
-                }else{
-                    realm.beginTransaction();
-                    ChoiceContactid cid = realm.createObject(ChoiceContactid.class);
-                    cid.setId(contactinfo.getId());
-                    realm.commitTransaction();
                 }
+                contactAdapter.notifyDataSetChanged();
             }
         });
         loadcontact();
@@ -264,7 +269,7 @@ public class MainActivity extends AppCompatActivity implements  OnDateSetListene
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1 && resultCode == RESULT_OK && data != null) {
-            String stredittext = data.getStringExtra("edittextvalue");
+//            String stredittext = data.getStringExtra("edittextvalue");
             loadcontact();
         }
     }
@@ -289,6 +294,7 @@ public class MainActivity extends AppCompatActivity implements  OnDateSetListene
     private void loadcontact() {
         boolean isallchosen = false;
         contactAdapter.items.clear();
+        checkelist.clear();
         results = realm.where(ChoiceGroupid.class).findAll();
         for (int i = 0; i < results.size(); i++) {
             if (results.get(i).getCode().equals("all")) {
@@ -350,9 +356,11 @@ public class MainActivity extends AppCompatActivity implements  OnDateSetListene
                         member.setGroupname(groupName);
                         member.setId(groupcursor.getString(1));
                         if(Config.checkContactArray(noSendList,id)){
-                            member.setChecked(true);
+                            checkelist.add(true);
+//                            member.setChecked(true);
                         }else{
-                            member.setChecked(false);
+                            checkelist.add(false);
+//                            member.setChecked(false);
                         }
                         members.add(member);
                     } while (numberCursor.moveToNext());
@@ -364,6 +372,7 @@ public class MainActivity extends AppCompatActivity implements  OnDateSetListene
     }
 
     private void allmember() {
+        checkelist.clear();
         //전체 연락처 리스트
         ContentResolver cr = getContentResolver();
         String sortOrder = ContactsContract.Contacts.DISPLAY_NAME + " COLLATE LOCALIZED ASC ";
@@ -389,9 +398,11 @@ public class MainActivity extends AppCompatActivity implements  OnDateSetListene
                         cd.setPhonenum(phoneNo);
                         cd.setId(id);
                         if(Config.checkContactArray(noSendList,id)){
-                            cd.setChecked(true);
+                            checkelist.add(true);
+//                            cd.setChecked(true);
                         }else{
-                            cd.setChecked(false);
+                            checkelist.add(false);
+//                            cd.setChecked(false);
                         }
                         contactmap.put(id, cd);
 //                        Toast.makeText(NativeContentProvider.this, "Name: " + name+ ", Phone No: " + phoneNo, Toast.LENGTH_SHORT).show();
@@ -426,9 +437,8 @@ public class MainActivity extends AppCompatActivity implements  OnDateSetListene
                 g.setId(c.getString(IDX_ID));
                 g.setTitle(c.getString(IDX_TITLE));
                 g.setCount(users);
-                g.setMembers(getContacts(c.getString(IDX_ID),c.getString(IDX_TITLE)));
-                g.setChecked(checkarray);
                 if(checkarray){
+                    g.setMembers(getContacts(c.getString(IDX_ID),c.getString(IDX_TITLE)));
                     contactAdapter.addlist(g.showMember());
                 }
             }
@@ -440,11 +450,18 @@ public class MainActivity extends AppCompatActivity implements  OnDateSetListene
         g.setTitle("미지정");
         g.setCount(0);
         boolean checkarray=Config.checkGroupArray(results,"all");
-        g.setChecked(checkarray);
+//        g.setChecked(checkarray);
 //        Log.i(String.valueOf(Config.checkArray(results,"all")),"미지정");
-        List<ContactData> list = new ArrayList<ContactData>(contactmap.values());
-        g.setMembers(list);
         if(checkarray){
+            List<ContactData> list = new ArrayList<ContactData>(contactmap.values());
+            for(int i=0;i<list.size();i++){
+                if(Config.checkContactArray(noSendList,list.get(i).getId())){
+                    checkelist.add(true);
+                }else{
+                    checkelist.add(false);
+                }
+            }
+            g.setMembers(list);
             contactAdapter.addlist(list);
         }
     }
